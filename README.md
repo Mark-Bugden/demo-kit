@@ -47,7 +47,7 @@ Put runtime data in `public/data/` (JSON or CSV) and exported models in `public/
 
 | Path | What it is |
 | --- | --- |
-| `manifest.json` | Metadata for the site's project card, page header and model card. |
+| `manifest.json` | Metadata for the site's project card, page header and, if the project has one, model card. |
 | `index.html` | Runs the demo standalone from any static server, at any URL depth. Relative paths only, no inline scripts. |
 | `demo.js`, `demo.css` | The built demo: one ES module and one stylesheet, with these fixed names. |
 | `thumb.webp` | 1200×675 px, under 80 KB. The project card image. |
@@ -71,7 +71,7 @@ Every key is required unless marked optional.
 | `kitVersion` | The kit version the demo was built with, without the `v`, e.g. `"0.1.0"`. |
 | `built` | The build date, `"YYYY-MM-DD"`. Update it when you cut a release. |
 | `demo` | `{ "entry": "demo.js", "height": <stage height in px>, "needsWebGL": <boolean> }`. |
-| `modelCard` | `{ "what": "…", "data": "…" (optional), "metric": "…" or null, "limits": ["…"] }`. |
+| `modelCard` | Optional, for projects built around a model. `{ "what": "…", "data": "…" (optional), "metric": "…" or null, "limits": ["…"] }`. |
 | `writeup` | The write-up's site path, `"/projects/<slug>/"`. |
 | `about` | Optional. Markdown for the frame's "How this works" panel. |
 
@@ -116,7 +116,7 @@ The frame renders these, top to bottom:
 3. Stage: the manifest's `height`, 16:9 on phones
 4. Status line
 5. A collapsible "How this works"
-6. Model card
+6. Model card, when the manifest has one
 7. Links to the repo and the write-up
 
 ```js

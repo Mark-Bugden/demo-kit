@@ -107,7 +107,7 @@ function checkManifest(dir) {
     if (!(Number.isInteger(m.demo.height) && m.demo.height > 0)) fail(`manifest.json: "demo.height" must be a positive integer (px), got ${JSON.stringify(m.demo.height)}`);
     if (typeof m.demo.needsWebGL !== 'boolean') fail(`manifest.json: "demo.needsWebGL" must be true or false, got ${JSON.stringify(m.demo.needsWebGL)}`);
   }
-  need('modelCard', isObject, 'an object');
+  if ('modelCard' in m && !isObject(m.modelCard)) fail(`manifest.json: "modelCard", when present, must be an object, got ${JSON.stringify(m.modelCard)}`);
   if (isObject(m.modelCard)) {
     const card = m.modelCard;
     if (!isText(card.what)) fail('manifest.json: "modelCard.what" must be a non-empty string');

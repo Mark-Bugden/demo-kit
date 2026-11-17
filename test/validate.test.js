@@ -96,11 +96,18 @@ describe('demo-kit validate', () => {
     assert.match(output, /missing required key "tagline"/);
   });
 
+  it('passes a manifest without a model card', () => {
+    const { code, output } = validate(without('modelCard'));
+    assert.equal(code, 0, output);
+    assert.match(output, /bundle valid/);
+  });
+
   it('fails on invalid values', () => {
     assert.match(validate(withManifest({ status: 'draft' })).output, /"status" must be one of/);
     assert.match(validate(withManifest({ kitVersion: 'v0.1.0' })).output, /"kitVersion" must be a version like "0.1.0" \(no leading "v"\)/);
     assert.match(validate(withManifest({ demo: { entry: 'main.js', height: 560, needsWebGL: false } })).output, /"demo.entry" must be "demo.js"/);
     assert.match(validate(withManifest({ modelCard: { what: 'x', limits: [] } })).output, /missing required key "modelCard.metric"/);
+    assert.match(validate(withManifest({ modelCard: null })).output, /"modelCard", when present, must be an object/);
   });
 
   it('warns about a write-up path that does not match the slug', () => {
