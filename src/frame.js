@@ -1,6 +1,7 @@
 // The standard demo chrome. mount() renders, top to bottom: title and tagline, a controls
 // rail (left on wide frames, stacked above the stage on narrow ones), the stage, a status
-// line, a collapsible "How this works", the model card, and links to the repo and write-up.
+// line, a collapsible "How this works", the model card (when there is one), and links to the
+// repo and write-up.
 //
 // When the mount element carries data-embedded (the site's project pages set it), the page
 // already shows the title, model card and links from the manifest, so the frame leaves
