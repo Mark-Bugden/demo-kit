@@ -1,0 +1,141 @@
+/*
+ * demo-kit design tokens: the single source for colour, type, spacing, radii and motion.
+ *
+ * The site uses this file unchanged, on :root. Demos import tokens.scoped.css instead,
+ * which `npm run tokens` generates from this file with every :root rule moved onto
+ * [data-demo], so a demo's CSS never touches the page around it.
+ *
+ * Theme: light by default; dark when the OS prefers it, unless <html data-theme="light">;
+ * always dark under <html data-theme="dark">. Every rule here must start with :root
+ * (scripts/scope-tokens.js relies on it).
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Colour: warm paper, near-black ink, one vermilion accent. Text pairs clear 4.5:1. */
+  --color-bg: #f4f1e9;
+  --color-surface: #fbfaf6;
+  --color-text: #17161a;
+  --color-muted: #58554d;
+  --color-border: #d6d0c2;
+  --color-accent: #b8381a;
+  --color-on-accent: #ffffff;
+  --color-focus: var(--color-accent);
+
+  /* Charts: categorical slots in fixed order (assign in sequence, never cycle). Validated for
+     colour-vision deficiency on --color-surface; slots 3, 4 and 5 sit below 3:1 on light,
+     so charts that use them need direct labels or a table. */
+  --chart-1: #2a78d6;
+  --chart-2: #eb6834;
+  --chart-3: #1baf7a;
+  --chart-4: #eda100;
+  --chart-5: #e87ba4;
+  --chart-6: #008300;
+  --chart-7: #4a3aa7;
+  --chart-8: #e34948;
+  /* Sequential (magnitude): one hue, low to high. */
+  --chart-seq-low: #cde2fb;
+  --chart-seq-high: #0d366b;
+
+  /* Type: a characterful display serif for headings, a quiet sans for everything else.
+     The site self-hosts both faces; standalone demos fall back to the system stacks. */
+  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-text: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.1875rem;
+  --text-xl: clamp(1.375rem, 1.2rem + 0.8vw, 1.625rem);
+  --text-2xl: clamp(1.75rem, 1.4rem + 1.6vw, 2.25rem);
+  --text-3xl: clamp(2.25rem, 1.6rem + 3vw, 3.5rem);
+  --text-4xl: clamp(2.75rem, 1.8rem + 4.5vw, 4.75rem);
+
+  --leading-tight: 1.1;
+  --leading-snug: 1.3;
+  --leading-normal: 1.6;
+  --tracking-display: -0.02em;
+  --weight-text: 400;
+  --weight-strong: 600;
+  --weight-display: 650;
+  --measure: 66ch;
+
+  /* Spacing: a 4px-based scale. */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+
+  /* Motion: short and quiet. Durations drop to zero under prefers-reduced-motion. */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 360ms;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark: a deep blue-black with warm ink, chosen for the dark surface rather than inverted. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-bg: #111215;
+    --color-surface: #1a1b20;
+    --color-text: #ece8df;
+    --color-muted: #a8a397;
+    --color-border: #33353c;
+    --color-accent: #ff8263;
+    --color-on-accent: #17110f;
+    --chart-1: #3987e5;
+    --chart-2: #d95926;
+    --chart-3: #199e70;
+    --chart-4: #c98500;
+    --chart-5: #d55181;
+    --chart-6: #008300;
+    --chart-7: #9085e9;
+    --chart-8: #e66767;
+    --chart-seq-low: #0d366b;
+    --chart-seq-high: #cde2fb;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #111215;
+  --color-surface: #1a1b20;
+  --color-text: #ece8df;
+  --color-muted: #a8a397;
+  --color-border: #33353c;
+  --color-accent: #ff8263;
+  --color-on-accent: #17110f;
+  --chart-1: #3987e5;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
+  --chart-4: #c98500;
+  --chart-5: #d55181;
+  --chart-6: #008300;
+  --chart-7: #9085e9;
+  --chart-8: #e66767;
+  --chart-seq-low: #0d366b;
+  --chart-seq-high: #cde2fb;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+    --duration-slow: 0ms;
+  }
+}

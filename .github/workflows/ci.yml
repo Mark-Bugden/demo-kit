@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  kit:
+    name: Lint and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+
+  template:
+    name: Build and validate the template
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      # Branch pushes: build the template against this commit of the kit, packed as npm would
+      # install it. The release tag does not exist yet, so the tag check is skipped.
+      - name: Install the template against this commit
+        if: github.ref_type != 'tag'
+        run: |
+          npm pack --pack-destination "$RUNNER_TEMP"
+          cp -r template "$RUNNER_TEMP/demo"
+          cd "$RUNNER_TEMP/demo"
+          npm install "$RUNNER_TEMP"/mark-bugden-demo-kit-*.tgz
+
+      # Tag pushes: exactly what a project does, installing the kit from the tag it pins.
+      - name: Install the template from the release tag
+        if: github.ref_type == 'tag'
+        run: |
+          test "$GITHUB_REF_NAME" = "v$(node -p "require('./package.json').version")"
+          cp -r template "$RUNNER_TEMP/demo"
+          cd "$RUNNER_TEMP/demo"
+          npm install
+
+      - name: Build
+        working-directory: ${{ runner.temp }}/demo
+        run: npm run build
+
+      - name: Validate
+        working-directory: ${{ runner.temp }}/demo
+        run: npx demo-kit validate dist/ ${{ github.ref_type != 'tag' && '--no-tag-check' || '' }}

@@ -1,0 +1,55 @@
+{
+  "name": "@mark-bugden/demo-kit",
+  "version": "0.1.0",
+  "description": "Shared frame, controls, solvers, chart wrapper, loader, design tokens and bundle validator for Mark Bugden's interactive demos.",
+  "license": "MIT",
+  "author": "Mark Bugden",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mark-Bugden/demo-kit.git"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./frame": "./src/frame.js",
+    "./controls": "./src/controls.js",
+    "./sim": "./src/sim.js",
+    "./chart": "./src/chart.js",
+    "./loader": "./src/loader.js",
+    "./theme": "./src/theme.js",
+    "./tokens.css": "./tokens.css",
+    "./tokens.scoped.css": "./tokens.scoped.css",
+    "./frame.css": "./frame.css",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "demo-kit": "bin/validate.js"
+  },
+  "files": [
+    "src/",
+    "bin/",
+    "tokens.css",
+    "tokens.scoped.css",
+    "frame.css",
+    "CHANGELOG.md"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "test": "node --test",
+    "tokens": "node scripts/scope-tokens.js"
+  },
+  "dependencies": {
+    "@observablehq/plot": "^0.6.19"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.15.0",
+    "globals": "^17.14.0"
+  }
+}
