@@ -6,8 +6,8 @@
   "tags": ["template"],
   "status": "stub",
   "repo": "https://github.com/Mark-Bugden/demo-kit",
-  "kitVersion": "0.1.0",
-  "built": "2026-11-17",
+  "kitVersion": "0.2.0",
+  "built": "2026-11-18",
   "demo": { "entry": "demo.js", "height": 560, "needsWebGL": false },
   "writeup": "/projects/template/",
   "about": "This is the **demo-kit template**: the standard frame around a placeholder stage. The stage traces a [Lissajous curve](https://en.wikipedia.org/wiki/Lissajous_curve), x = sin(a·t + π/2), y = sin(b·t), and the controls change the ratio a : b and the speed.\n\nTo start a project's demo, copy this folder into the project's `demo/`, fill in `public/manifest.json` and replace the drawing code in `src/main.js`."

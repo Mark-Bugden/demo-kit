@@ -12,8 +12,8 @@ const target = new URL('../tokens.scoped.css', import.meta.url);
 const HEADER = `/*
  * Generated from tokens.css by scripts/scope-tokens.js (npm run tokens). Do not edit.
  *
- * The demo-kit tokens declared on [data-demo] for demo bundles. The site declares the
- * same tokens on :root from tokens.css; the theme still follows <html data-theme>.
+ * The demo-kit tokens declared on [data-demo] for demo bundles. The theme still follows
+ * <html data-theme>: dark unless it is "light", as on the site.
  */`;
 
 // ":root" becomes "[data-demo]"; ":root<conditions>" keeps its conditions on the root

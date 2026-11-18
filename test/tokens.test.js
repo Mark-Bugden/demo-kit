@@ -42,8 +42,8 @@ describe('tokens', () => {
 
   it('text colours clear 4.5:1 on the background and surface in both themes', () => {
     const css = read('tokens.css');
-    const light = block(css, ':root');
-    const themes = { light, dark: { ...light, ...block(css, ':root[data-theme="dark"]') } };
+    const dark = block(css, ':root');
+    const themes = { dark, light: { ...dark, ...block(css, ':root[data-theme="light"]') } };
     for (const [name, t] of Object.entries(themes)) {
       for (const fg of ['--color-text', '--color-muted', '--color-accent']) {
         for (const bg of ['--color-bg', '--color-surface']) {
@@ -55,9 +55,25 @@ describe('tokens', () => {
     }
   });
 
-  it('the dark theme is the same whether it comes from the OS or data-theme', () => {
+  it('chart slots clear 3:1 on the surface in both themes', () => {
     const css = read('tokens.css');
-    assert.deepEqual(block(css, ':root:not([data-theme="light"])'), block(css, ':root[data-theme="dark"]'));
+    const dark = block(css, ':root');
+    const themes = { dark, light: { ...dark, ...block(css, ':root[data-theme="light"]') } };
+    for (const [name, t] of Object.entries(themes)) {
+      for (let slot = 1; slot <= 8; slot++) {
+        const ratio = contrast(t[`--chart-${slot}`], t['--color-surface']);
+        assert.ok(ratio >= 3, `${name}: --chart-${slot} on --color-surface is ${ratio.toFixed(2)}:1`);
+      }
+    }
+  });
+
+  it('is dark unless data-theme="light", which restates every colour but the fixed ones', () => {
+    const css = read('tokens.css');
+    assert.doesNotMatch(css.replace(/\/\*[\s\S]*?\*\//g, ''), /prefers-color-scheme/);
+    const dark = block(css, ':root');
+    const fixed = ['--color-focus', '--color-sodium', '--color-halpha'];
+    const themed = Object.keys(dark).filter((name) => /^--(color|chart)-/.test(name) && !fixed.includes(name));
+    assert.deepEqual(Object.keys(block(css, ':root[data-theme="light"]')).sort(), themed.sort());
   });
 });
 

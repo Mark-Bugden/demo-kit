@@ -1,6 +1,6 @@
 {
   "name": "@mark-bugden/demo-kit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Shared frame, controls, solvers, chart wrapper, loader, design tokens and bundle validator for Mark Bugden's interactive demos.",
   "license": "MIT",
   "author": "Mark Bugden",

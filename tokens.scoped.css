@@ -1,43 +1,50 @@
 /*
  * Generated from tokens.css by scripts/scope-tokens.js (npm run tokens). Do not edit.
  *
- * The demo-kit tokens declared on [data-demo] for demo bundles. The site declares the
- * same tokens on :root from tokens.css; the theme still follows <html data-theme>.
+ * The demo-kit tokens declared on [data-demo] for demo bundles. The theme still follows
+ * <html data-theme>: dark unless it is "light", as on the site.
  */
 
 [data-demo] {
-  color-scheme: light;
+  color-scheme: dark;
 
-  /* Colour: warm paper, near-black ink, one vermilion accent. Text pairs clear 4.5:1. */
-  --color-bg: #f4f1e9;
-  --color-surface: #fbfaf6;
-  --color-text: #17161a;
-  --color-muted: #58554d;
-  --color-border: #d6d0c2;
-  --color-accent: #b8381a;
-  --color-on-accent: #ffffff;
+  /* Colour: blue-black night, cool grey ink, one sodium amber accent. Text pairs clear 4.5:1. */
+  --color-bg: #0a0e14;
+  --color-surface: #111722;
+  --color-text: #e8ecf2;
+  --color-muted: #9aa6b8;
+  --color-border: #2a3444;
+  --color-accent: #f6be55;
+  --color-on-accent: #0a0e14;
   --color-focus: var(--color-accent);
+  /* The phase portrait's curves: secondary strokes such as outlines and reference lines. It sits
+     below 3:1, so never use it for text or for a mark that must be seen on its own. */
+  --color-curve: #526178;
+  /* The two accents, by name, for demos that draw with them: sodium amber (the dark accent) and
+     H-alpha red (the light one). The same in both themes. */
+  --color-sodium: #f6be55;
+  --color-halpha: #c2391b;
 
   /* Charts: categorical slots in fixed order (assign in sequence, never cycle). Validated for
-     colour-vision deficiency on --color-surface; slots 3, 4 and 5 sit below 3:1 on light,
-     so charts that use them need direct labels or a table. */
-  --chart-1: #2a78d6;
-  --chart-2: #eb6834;
-  --chart-3: #1baf7a;
-  --chart-4: #eda100;
-  --chart-5: #e87ba4;
+     colour-vision deficiency on --color-surface, where every slot clears 3:1 in both themes. No
+     slot sits within OKLab delta E 15 of its theme's accent, so a series never reads as a link. */
+  --chart-1: #3987e5;
+  --chart-2: #ca6408;
+  --chart-3: #199e70;
+  --chart-4: #c98500;
+  --chart-5: #d55181;
   --chart-6: #008300;
-  --chart-7: #4a3aa7;
-  --chart-8: #e34948;
-  /* Sequential (magnitude): one hue, low to high. */
-  --chart-seq-low: #cde2fb;
-  --chart-seq-high: #0d366b;
+  --chart-7: #9085e9;
+  --chart-8: #e66767;
+  /* Sequential (magnitude): one hue, the blue of slot 1 and of the site's greys, low to high. */
+  --chart-seq-low: #0d366b;
+  --chart-seq-high: #cde2fb;
 
-  /* Type: a characterful display serif for headings, a quiet sans for everything else.
-     The site self-hosts both faces; standalone demos fall back to the system stacks. */
-  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-  --font-text: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  /* Type: Space Grotesk for display, Inter for text, JetBrains Mono for code, as on the site.
+     The site self-hosts all three; standalone demos fall back to the system stacks. */
+  --font-display: "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-text: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
@@ -51,10 +58,11 @@
   --leading-tight: 1.1;
   --leading-snug: 1.3;
   --leading-normal: 1.6;
+  /* Space Grotesk headings, as on the site: medium weight, slightly tightened. */
   --tracking-display: -0.02em;
   --weight-text: 400;
   --weight-strong: 600;
-  --weight-display: 650;
+  --weight-display: 500;
   --measure: 66ch;
 
   /* Spacing: a 4px-based scale. */
@@ -82,49 +90,27 @@
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Dark: a deep blue-black with warm ink, chosen for the dark surface rather than inverted. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) [data-demo] {
-    color-scheme: dark;
-    --color-bg: #111215;
-    --color-surface: #1a1b20;
-    --color-text: #ece8df;
-    --color-muted: #a8a397;
-    --color-border: #33353c;
-    --color-accent: #ff8263;
-    --color-on-accent: #17110f;
-    --chart-1: #3987e5;
-    --chart-2: #d95926;
-    --chart-3: #199e70;
-    --chart-4: #c98500;
-    --chart-5: #d55181;
-    --chart-6: #008300;
-    --chart-7: #9085e9;
-    --chart-8: #e66767;
-    --chart-seq-low: #0d366b;
-    --chart-seq-high: #cde2fb;
-  }
-}
-
-:root[data-theme="dark"] [data-demo] {
-  color-scheme: dark;
-  --color-bg: #111215;
-  --color-surface: #1a1b20;
-  --color-text: #ece8df;
-  --color-muted: #a8a397;
-  --color-border: #33353c;
-  --color-accent: #ff8263;
-  --color-on-accent: #17110f;
-  --chart-1: #3987e5;
-  --chart-2: #d95926;
-  --chart-3: #199e70;
-  --chart-4: #c98500;
-  --chart-5: #d55181;
+/* Light: the site's daylight palette, with H-alpha red as the accent. */
+:root[data-theme="light"] [data-demo] {
+  color-scheme: light;
+  --color-bg: #f5f6f8;
+  --color-surface: #ffffff;
+  --color-text: #10151d;
+  --color-muted: #556070;
+  --color-border: #d3d9e1;
+  --color-accent: #c2391b;
+  --color-on-accent: #ffffff;
+  --color-curve: #98a4b5;
+  --chart-1: #2a78d6;
+  --chart-2: #ea7401;
+  --chart-3: #1aa972;
+  --chart-4: #c48817;
+  --chart-5: #e36f99;
   --chart-6: #008300;
-  --chart-7: #9085e9;
-  --chart-8: #e66767;
-  --chart-seq-low: #0d366b;
-  --chart-seq-high: #cde2fb;
+  --chart-7: #4a3aa7;
+  --chart-8: #fb5f65;
+  --chart-seq-low: #cde2fb;
+  --chart-seq-high: #0d366b;
 }
 
 @media (prefers-reduced-motion: reduce) {

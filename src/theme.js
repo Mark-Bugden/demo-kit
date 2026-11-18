@@ -1,36 +1,26 @@
-// The active colour theme. The site may pin one with <html data-theme="light|dark">;
-// otherwise the OS preference (prefers-color-scheme) decides.
-
-const DARK_QUERY = '(prefers-color-scheme: dark)';
+// The active colour theme. Dark by default, as on the site, whatever the OS prefers; light only
+// when the page sets <html data-theme="light">, as the site's theme switch does.
 
 /** Returns "light" or "dark". */
 export function getTheme() {
-  const pinned = document.documentElement.getAttribute('data-theme');
-  if (pinned === 'light' || pinned === 'dark') return pinned;
-  return globalThis.matchMedia?.(DARK_QUERY).matches ? 'dark' : 'light';
+  return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
 }
 
 /**
- * Calls `callback(theme)` whenever the active theme changes, from either the OS setting
- * or the site's data-theme attribute. Returns a function that stops listening.
+ * Calls `callback(theme)` whenever the active theme changes, i.e. when the page's data-theme
+ * attribute switches between light and anything else. Returns a function that stops listening.
  */
 export function onThemeChange(callback) {
   let current = getTheme();
-  const check = () => {
+  const observer = new MutationObserver(() => {
     const next = getTheme();
     if (next !== current) {
       current = next;
       callback(next);
     }
-  };
-  const media = globalThis.matchMedia?.(DARK_QUERY);
-  media?.addEventListener('change', check);
-  const observer = new MutationObserver(check);
+  });
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-  return () => {
-    media?.removeEventListener('change', check);
-    observer.disconnect();
-  };
+  return () => observer.disconnect();
 }
 
 /**
