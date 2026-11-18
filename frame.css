@@ -9,7 +9,6 @@
   container-type: inline-size;
   display: block;
   color: var(--color-text);
-  background: var(--color-bg);
   font-family: var(--font-text);
   font-size: var(--text-md);
   line-height: var(--leading-normal);
@@ -22,10 +21,12 @@
   box-sizing: border-box;
 }
 
-/* Standalone (index.html): fill the window, centre the content. Embedded, the site lays it out. */
+/* Standalone (index.html): fill the window with the page colour, centre the content. Embedded, the
+   site lays it out on its own page colour, so the frame paints no background that could show a seam. */
 [data-demo]:not([data-embedded]) {
   min-height: 100vh;
   padding: var(--space-6) max(var(--space-4), calc((100% - 72rem) / 2)) var(--space-7);
+  background: var(--color-bg);
 }
 
 /* The static.webp placeholder shown before the script mounts. */

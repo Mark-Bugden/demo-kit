@@ -79,7 +79,7 @@ Every key is required unless marked optional.
 
 A bundle's CSS may only style its mount element and what is inside it. Every selector must reach its target through `[data-demo]`, so `:root`, `html`, `body` and bare class selectors are all out. This keeps a demo built against an older kit from restyling the site.
 
-Demos import `tokens.scoped.css`, which declares the tokens on `[data-demo]`. The site declares the same tokens on `:root` from `tokens.css`.
+Demos import `tokens.scoped.css`, which declares the tokens on `[data-demo]`. The site keeps its own tokens on `:root`, in its stylesheet.
 
 ### Embedding
 
@@ -95,7 +95,9 @@ The site embeds a demo the same way `index.html` loads it:
 
 The script replaces the contents of the `<div>`, so the still image covers loading and no-JavaScript. The site never iframes a demo.
 
-`data-embedded` tells the frame that the page already shows the title, tagline, model card and links from the manifest, so the frame renders only the controls, stage, status line and "How this works". The site's theme switch sets `data-theme="light"` or `"dark"` on `<html>`. Demos follow it, and follow the OS setting when the attribute is absent.
+`data-embedded` tells the frame that the page already shows the title, tagline, model card and links from the manifest, so the frame renders only the controls, stage, status line and "How this works". It also paints no background of its own, so the page shows through with no seam.
+
+Demos are dark, as the site is, unless `<html>` has `data-theme="light"`, which the site's theme switch sets. The OS setting does not change the theme.
 
 ## API
 
@@ -185,7 +187,7 @@ plot({ marks: [Plot.lineY(rows, { x: 'day', y: 'count', stroke: 'compartment' })
 
 Call `plot()` inside `render`, so the chart follows resizes and theme changes.
 
-In light mode, chart slots 3, 4 and 5 fall below 3:1 against the surface. Label those series directly, or offer a table.
+Every chart slot clears 3:1 against the surface in both themes, so draw charts on the surface, as the stage does. On the light page background, slots 2, 3, 4, 5 and 8 fall to about 2.8:1. In dark mode, slots 2, 5 and 8 sit close to `--color-halpha`, so a chart that also draws with H-alpha should skip them.
 
 ### Loading data
 
@@ -198,18 +200,29 @@ Paths resolve against the demo's own folder. The same call works standalone, emb
 
 ### Theme
 
-`getTheme()` returns `'light'` or `'dark'`. `onThemeChange(fn)` calls `fn(theme)` on every change and returns an unsubscribe function. `token(el, name)` reads a token's computed value.
+`getTheme()` returns `'dark'`, or `'light'` when `<html>` has `data-theme="light"`. `onThemeChange(fn)` calls `fn(theme)` whenever that switches, and returns an unsubscribe function. `token(el, name)` reads a token's computed value.
 
 ## Design tokens
 
-[`tokens.css`](tokens.css) is the single source of design tokens.
+[`tokens.css`](tokens.css) is the single source of design tokens. Its colours and faces follow the site's phase portrait design, in [`assets/css/site.css`](https://github.com/Mark-Bugden/Mark-Bugden.github.io/blob/main/assets/css/site.css), under the kit's names:
 
-- **Colours:** warm paper, near-black ink and one vermilion accent, with a dark theme designed for its own surface. Text pairs clear 4.5:1 in both themes.
-- **Charts:** a colour-blind-checked categorical palette and a sequential ramp.
-- **Type:** Fraunces for display and IBM Plex Sans for text.
+| Site | Kit | Dark (default) | Light |
+| --- | --- | --- | --- |
+| `--bg` | `--color-bg` | `#0a0e14` | `#f5f6f8` |
+| `--panel` | `--color-surface` | `#111722` | `#ffffff` |
+| `--fg` | `--color-text` | `#e8ecf2` | `#10151d` |
+| `--muted` | `--color-muted` | `#9aa6b8` | `#556070` |
+| `--line` | `--color-border` | `#2a3444` | `#d3d9e1` |
+| `--curve` | `--color-curve` | `#526178` | `#98a4b5` |
+| `--accent` | `--color-accent` | `#f6be55`, sodium amber | `#c2391b`, H-alpha red |
+
+- **Theme:** dark, whatever the OS prefers; light only under `<html data-theme="light">`.
+- **Colours:** text, muted text and the accent clear 4.5:1 on the background and surface in both themes, and `--color-on-accent` clears 4.5:1 on the accent. `--color-curve` is for secondary strokes, such as outlines and reference lines, and never for text. `--color-sodium` and `--color-halpha` name the two accents and stay the same in both themes, for demos that draw with them.
+- **Charts:** eight categorical slots and a sequential ramp, checked for colour-vision deficiency on the surface. No slot sits within ΔE 15 of its theme's accent, so a series never looks like a link.
+- **Type:** Space Grotesk for display, at weight 500 and −0.02em tracking as on the site's headings; Inter for text; JetBrains Mono for code. Each has a system fallback stack.
 - **Spacing, radii and motion:** motion durations drop to zero under `prefers-reduced-motion`.
 
-The kit names the fonts but does not ship them. The site self-hosts both, so a standalone demo shows the fallback stacks.
+The kit names the fonts but does not ship them. The site self-hosts all three, so a standalone demo shows the fallback stacks.
 
 `tokens.scoped.css` is generated. After editing `tokens.css`, run `npm run tokens` and commit both files; the tests fail if they differ.
 
@@ -248,7 +261,7 @@ On branch pushes, CI builds the template against the packed working copy instead
 
 ```sh
 npm run lint     # ESLint
-npm test         # node:test: validator, solvers, loader, Markdown subset, tokens, template versions
+npm test         # node:test: validator, solvers, loader, Markdown subset, theme, tokens, template versions
 npm run tokens   # regenerate tokens.scoped.css
 ```
 
