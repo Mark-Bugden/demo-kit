@@ -4,3 +4,4 @@ export { rk4, gridDiffusion2D, runInWorker } from './sim.js';
 export { plot, Plot } from './chart.js';
 export { loadJSON, loadCSV } from './loader.js';
 export { getTheme, onThemeChange, token } from './theme.js';
+export { parseHex, toHex, toOklab, fromOklab, interpolate, ramp, luminance, contrast, simulate, distance, DEFICIENCIES } from './colour.js';
