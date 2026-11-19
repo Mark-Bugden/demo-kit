@@ -9,7 +9,7 @@ The shared library behind the interactive demos on [mark-bugden.github.io](https
 - design tokens
 - a validator for the bundle each project builds
 
-Each project repo keeps its demo in `demo/`, copied from [`template/`](template/), and pins this kit to a release tag.
+Each project repo keeps its demo in `demo/`, copied from [`template/`](template/), and pins this kit to a release tag. Its `.github/workflows/demo.yml` releases the demo when a PR that bumps `demo/package.json`'s version merges, and starts the site's build; a new project copies it from an existing one, such as [zombie-outbreak](https://github.com/Mark-Bugden/zombie-outbreak/blob/main/.github/workflows/demo.yml). See [`template/README.md`](template/README.md).
 
 Plain ES modules, no build step to use it. The only runtime dependency is [Observable Plot](https://observablehq.com/plot/).
 
@@ -70,7 +70,7 @@ Every key is required unless marked optional.
 | `status` | `"stub"`, `"in-progress"` or `"live"`. |
 | `repo` | `"https://github.com/Mark-Bugden/<repo>"`. |
 | `kitVersion` | The kit version the demo was built with, without the `v`, e.g. `"0.1.0"`. |
-| `built` | The build date, `"YYYY-MM-DD"`. Update it when you cut a release. |
+| `built` | The build date, `"YYYY-MM-DD"`. A project's release workflow sets it to the release day, so the committed value only needs to be a valid date. |
 | `demo` | `{ "entry": "demo.js", "height": <stage height in px>, "needsWebGL": <boolean> }`. |
 | `modelCard` | Optional, for projects built around a model. `{ "what": "…", "data": "…" (optional), "metric": "…" or null, "limits": ["…"] }`. |
 | `writeup` | The write-up's site path, `"/projects/<slug>/"`. |
