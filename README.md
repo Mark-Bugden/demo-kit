@@ -100,6 +100,8 @@ When the bundle has `static-light.webp`, the site adds it as a second `<img>` be
 
 `data-embedded` tells the frame that the page already shows the title, tagline, model card and links from the manifest, so the frame renders only the controls, stage, status line and "How this works". It also paints no background of its own, so the page shows through with no seam.
 
+The site also sets `--dk-fit-height` on an element around the embed: the window's height, less what the page shows above the demo and a small margin. A demo that sizes its stage to the window reads it instead of `100dvh`, as `var(--dk-fit-height, 100dvh)`, so that the whole frame is on screen when the page opens. The kit's own stage keeps the manifest's `height`.
+
 Demos are dark, as the site is, unless `<html>` has `data-theme="light"`, which the site's theme switch sets. The OS setting does not change the theme.
 
 ## API
@@ -255,8 +257,10 @@ A change that breaks the bundle contract, such as a renamed manifest key or a ch
 To release:
 
 1. In the PR, bump `version` in `package.json`, `kitVersion` in `template/public/manifest.json`, and the tag in `template/package.json`. Add a CHANGELOG entry. The tests check that all four agree.
-2. After merge, tag the merge commit on `main` and push the tag.
+2. Merge it. CI on `main` sees that the version has no tag yet, so it tags the merge commit.
 3. CI then installs the template from that tag, builds it and validates it with the tag check on.
+
+A PR that leaves the version alone releases nothing. A demo moves to a new release in its own PR, by bumping the tag in its `demo/package.json`. The site validates each bundle with the kit version it was built with, so it needs no change.
 
 On branch pushes, CI builds the template against the packed working copy instead, and skips the tag check.
 

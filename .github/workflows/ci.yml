@@ -57,3 +57,41 @@ jobs:
       - name: Validate
         working-directory: ${{ runner.temp }}/demo
         run: npx demo-kit validate dist/ ${{ github.ref_type != 'tag' && '--no-tag-check' || '' }}
+
+  # On main, once the other jobs pass: tag v<version> if that tag is new, then do what a project does,
+  # installing the template from the tag. A tag pushed with the workflow's token starts no new run,
+  # so this job checks it itself.
+  release:
+    name: Tag the release
+    if: github.ref == 'refs/heads/main'
+    needs: [kit, template]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # pushes the tag
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Tag v<version> if it is new
+        id: tag
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if git ls-remote --exit-code --tags origin "refs/tags/v$version" > /dev/null; then
+            echo "v$version is already tagged; nothing to release."
+            echo "tagged=false" >> "$GITHUB_OUTPUT"
+          else
+            git tag "v$version" "$GITHUB_SHA"
+            git push origin "v$version"
+            echo "tagged=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install, build and validate the template from the tag
+        if: steps.tag.outputs.tagged == 'true'
+        run: |
+          cp -r template "$RUNNER_TEMP/demo"
+          cd "$RUNNER_TEMP/demo"
+          npm install
+          npm run build
+          npx demo-kit validate dist/
