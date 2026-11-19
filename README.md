@@ -53,6 +53,7 @@ Put runtime data in `public/data/` (JSON or CSV) and exported models in `public/
 | `thumb.webp` | 1200×675 px, under 80 KB. The project card image. |
 | `og.jpg` | 1200×630 px JPEG, under 150 KB. Used for link previews only. |
 | `static.webp` | A still of the demo's opening state. Shown while the script loads and when JavaScript is off. |
+| `thumb-light.webp`, `static-light.webp` | Optional: light-theme versions of `thumb.webp` and `static.webp`, with the same sizes and limits. The site shows them instead under its light theme. Without them, it shows the dark ones in both themes. |
 | `data/`, `model/` | Optional: `.json`, `.csv` or `.js` files. The whole bundle must stay under 2 MB. |
 
 Sizes use 1 KB = 1000 bytes.
@@ -94,6 +95,8 @@ The site embeds a demo the same way `index.html` loads it:
 ```
 
 The script replaces the contents of the `<div>`, so the still image covers loading and no-JavaScript. The site never iframes a demo.
+
+When the bundle has `static-light.webp`, the site adds it as a second `<img>` beside the first, and its own stylesheet shows whichever matches the theme. `index.html` needs only `static.webp`, since a standalone demo is always dark.
 
 `data-embedded` tells the frame that the page already shows the title, tagline, model card and links from the manifest, so the frame renders only the controls, stage, status line and "How this works". It also paints no background of its own, so the page shows through with no seam.
 

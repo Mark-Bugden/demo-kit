@@ -6,7 +6,7 @@
   "tags": ["template"],
   "status": "stub",
   "repo": "https://github.com/Mark-Bugden/demo-kit",
-  "kitVersion": "0.2.0",
+  "kitVersion": "0.3.0",
   "built": "2026-11-18",
   "demo": { "entry": "demo.js", "height": 560, "needsWebGL": false },
   "writeup": "/projects/template/",

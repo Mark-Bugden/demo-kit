@@ -12,6 +12,8 @@ import { extname, join, resolve } from 'node:path';
 const KIT_REPO = 'https://github.com/Mark-Bugden/demo-kit.git';
 const KB = 1000;
 const REQUIRED_FILES = ['manifest.json', 'index.html', 'demo.js', 'demo.css', 'thumb.webp', 'og.jpg', 'static.webp'];
+// Light-theme versions of thumb.webp and static.webp, which the site shows under its light theme.
+const OPTIONAL_FILES = ['thumb-light.webp', 'static-light.webp'];
 const OPTIONAL_DIRS = ['data', 'model'];
 const DATA_EXTENSIONS = ['.json', '.csv', '.js'];
 const MAX_BUNDLE_BYTES = 2000 * KB;
@@ -52,12 +54,12 @@ function checkFiles(dir) {
   else pass(`required files present: ${REQUIRED_FILES.join(', ')}`);
 
   const extra = files.filter((path) => {
-    if (REQUIRED_FILES.includes(path)) return false;
+    if (REQUIRED_FILES.includes(path) || OPTIONAL_FILES.includes(path)) return false;
     const [top, ...rest] = path.split('/');
     return !(OPTIONAL_DIRS.includes(top) && rest.length && DATA_EXTENSIONS.includes(extname(path).toLowerCase()));
   });
   if (extra.length) {
-    fail(`unexpected files (only ${REQUIRED_FILES.join(', ')} and ${DATA_EXTENSIONS.join('/')} files under data/ or model/ are allowed): ${extra.join(', ')}`);
+    fail(`unexpected files (only ${REQUIRED_FILES.join(', ')}, optionally ${OPTIONAL_FILES.join(' and ')}, and ${DATA_EXTENSIONS.join('/')} files under data/ or model/ are allowed): ${extra.join(', ')}`);
   }
 
   const total = files.reduce((sum, path) => sum + statSync(join(dir, path)).size, 0);
@@ -319,18 +321,20 @@ function jpegSize(bytes) {
   return null;
 }
 
+/** Checks an image, and returns its { width, height }, or null if it can't be read. */
 function checkImage(dir, name, { format, width, height, maxBytes }) {
   const bytes = readFileSync(join(dir, name));
   const size = format === 'WebP' ? webpSize(bytes) : jpegSize(bytes);
   if (!size) {
     fail(`${name}: not a readable ${format} file`);
-    return;
+    return null;
   }
   const errors = [];
   if (width && (size.width !== width || size.height !== height)) errors.push(`must be ${width}×${height} px, is ${size.width}×${size.height}`);
   if (maxBytes && bytes.length >= maxBytes) errors.push(`must be under ${kb(maxBytes)}, is ${kb(bytes.length)}`);
   if (errors.length) fail(`${name}: ${errors.join('; ')}`);
   else pass(`${name}: ${format} ${size.width}×${size.height}, ${kb(bytes.length)}`);
+  return size;
 }
 
 // Main
@@ -347,9 +351,13 @@ function validate(dir, { tagCheck = true } = {}) {
   if (has('index.html')) checkIndexHtml(dir, manifest?.slug);
   if (has('demo.css')) checkCss(dir, manifest?.slug);
   if (has('demo.js') && statSync(join(dir, 'demo.js')).size === 0) fail('demo.js is empty');
-  if (has('thumb.webp')) checkImage(dir, 'thumb.webp', { format: 'WebP', width: 1200, height: 675, maxBytes: 80 * KB });
+  const thumb = { format: 'WebP', width: 1200, height: 675, maxBytes: 80 * KB };
+  if (has('thumb.webp')) checkImage(dir, 'thumb.webp', thumb);
+  if (has('thumb-light.webp')) checkImage(dir, 'thumb-light.webp', thumb);
   if (has('og.jpg')) checkImage(dir, 'og.jpg', { format: 'JPEG', width: 1200, height: 630, maxBytes: 150 * KB });
-  if (has('static.webp')) checkImage(dir, 'static.webp', { format: 'WebP' });
+  const still = has('static.webp') ? checkImage(dir, 'static.webp', { format: 'WebP' }) : null;
+  // The light still swaps in for the dark one, so it must be the same size.
+  if (has('static-light.webp')) checkImage(dir, 'static-light.webp', { format: 'WebP', width: still?.width, height: still?.height });
 
   const summary = `${problems.length} problem${problems.length === 1 ? '' : 's'}, ${warnings.length} warning${warnings.length === 1 ? '' : 's'}`;
   console.log(problems.length ? `FAIL  ${dir}: ${summary}` : `OK    ${dir}: bundle valid (${summary})`);

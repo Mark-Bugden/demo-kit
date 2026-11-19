@@ -2,6 +2,12 @@
 
 Each release is a tag `v<major>.<minor>.<patch>` on `main`. A change that breaks the bundle contract (a renamed manifest key, a changed mount API) is a major version and is marked **Breaking**.
 
+## 0.3.0
+
+Light-theme images. The bundle contract gains two optional files; bundles without them are unchanged.
+
+- `thumb-light.webp` and `static-light.webp`: light-theme versions of the project card image and the loading still, which the site shows under its light theme. The validator holds them to the same rules as `thumb.webp` (1200×675 px WebP, under 80 KB) and `static.webp` (WebP), and `static-light.webp` to the same size as `static.webp`, since it swaps in for it.
+
 ## 0.2.0
 
 Design tokens for the site's phase portrait design, so demos match the pages they sit on. The bundle contract and the API are unchanged, but **dark is now the default theme**.
