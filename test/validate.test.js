@@ -123,6 +123,20 @@ describe('demo-kit validate', () => {
     assert.match(validate(bundle({ files: { '.DS_Store': '' } })).output, /unexpected files .*\.DS_Store/);
   });
 
+  it('passes light-theme versions of the thumbnail and the still', () => {
+    const { code, output } = validate(bundle({ files: { 'thumb-light.webp': webp(1200, 675), 'static-light.webp': webp(1200, 675) } }));
+    assert.equal(code, 0, output);
+    assert.match(output, /PASS {2}thumb-light.webp: WebP 1200×675/);
+    assert.match(output, /PASS {2}static-light.webp: WebP 1200×675/);
+  });
+
+  it('holds the light images to the same sizes as the dark ones', () => {
+    assert.match(validate(bundle({ files: { 'thumb-light.webp': webp(1200, 630) } })).output, /thumb-light.webp: must be 1200×675 px, is 1200×630/);
+    assert.match(validate(bundle({ files: { 'thumb-light.webp': Buffer.concat([webp(1200, 675), Buffer.alloc(80_000)]) } })).output, /thumb-light.webp: must be under 80.0 KB/);
+    assert.match(validate(bundle({ files: { 'static-light.webp': webp(800, 450) } })).output, /static-light.webp: must be 1200×675 px, is 800×450/);
+    assert.match(validate(bundle({ files: { 'static-light.webp': jpeg(1200, 675) } })).output, /static-light.webp: not a readable WebP file/);
+  });
+
   it('fails on images of the wrong size', () => {
     assert.match(validate(bundle({ files: { 'thumb.webp': webp(1200, 630) } })).output, /thumb.webp: must be 1200×675 px, is 1200×630/);
     assert.match(validate(bundle({ files: { 'og.jpg': webp(1200, 630) } })).output, /og.jpg: not a readable JPEG file/);
