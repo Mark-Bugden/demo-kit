@@ -2,6 +2,17 @@
 
 Each release is a tag `v<major>.<minor>.<patch>` on `main`. A change that breaks the bundle contract (a renamed manifest key, a changed mount API) is a major version and is marked **Breaking**.
 
+## 0.4.0
+
+A shared palette. Each theme has three colour roles, which the site uses too. The bundle contract is unchanged, but the light accent changes, two tokens are gone and continuous chart colours change.
+
+- **The main highlight**, `--color-accent`, keeps its name, so demos pick it up without changes. Dark is still sodium amber (`#f6be55`). Light is now viridis blue (`#285388`, 7.8:1 on the surface) in place of H-alpha red. It's the only role that may carry text.
+- **The contrasting highlight**, `--color-accent-2`, is new: ember red (`#c13c36`) on dark and green (`#5ca24c`) on light. It's for a second group beside the first, drawn as dots, lines and fills. It clears 3:1 on the surface (3.4:1 dark, 3.1:1 light) but not 4.5:1, so never use it for text. The two highlights stay at least 0.2 apart in OKLab with each colour-vision deficiency.
+- **The spectrum**, `--chart-spectrum-1` to `--chart-spectrum-4`, replaces the one-hue sequential ramp: **`--chart-seq-low` and `--chart-seq-high` are gone.** Dark is "ember" (`#c13c36 #ea6a12 #f6be55 #f9f0ba`) and light is "viridis" (`#35226a #285388 #0f8080 #5ca24c`). Lighter is higher in both. `plot()` now runs continuous colour scales through it.
+- **Colour maths**, in `@mark-bugden/demo-kit/colour`: `ramp()` interpolates through several stops in OKLab, and `contrast()`, `simulate()` and `distance()` check a palette. They come from doctor-who-ratings, whose heatmap the spectrum was made for, and so do the spectrum's tests.
+- Light chart slot 7 moves from `#4a3aa7` to `#5d1cb6`, to stay ΔE 15 from the new accent. The tests now check this for every slot.
+- `--color-sodium` and `--color-halpha` are unchanged.
+
 ## 0.3.0
 
 Light-theme images. The bundle contract gains two optional files; bundles without them are unchanged.

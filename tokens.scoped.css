@@ -8,7 +8,8 @@
 [data-demo] {
   color-scheme: dark;
 
-  /* Colour: blue-black night, cool grey ink, one sodium amber accent. Text pairs clear 4.5:1. */
+  /* Colour: blue-black night, cool grey ink, a sodium amber accent and ember red beside it. Text
+     pairs clear 4.5:1. */
   --color-bg: #0a0e14;
   --color-surface: #111722;
   --color-text: #e8ecf2;
@@ -17,17 +18,21 @@
   --color-accent: #f6be55;
   --color-on-accent: #0a0e14;
   --color-focus: var(--color-accent);
+  /* The contrasting highlight. It clears 3:1 on the surface, but not 4.5:1, so never use it for
+     text. It stays at least 0.2 from the accent in OKLab with each colour-vision deficiency. */
+  --color-accent-2: #c13c36;
   /* The phase portrait's curves: secondary strokes such as outlines and reference lines. It sits
      below 3:1, so never use it for text or for a mark that must be seen on its own. */
   --color-curve: #526178;
-  /* The two accents, by name, for demos that draw with them: sodium amber (the dark accent) and
-     H-alpha red (the light one). The same in both themes. */
+  /* Sodium amber (the dark accent) and H-alpha red, by name, for demos that draw with them. The
+     same in both themes. */
   --color-sodium: #f6be55;
   --color-halpha: #c2391b;
 
   /* Charts: categorical slots in fixed order (assign in sequence, never cycle). Validated for
      colour-vision deficiency on --color-surface, where every slot clears 3:1 in both themes. No
-     slot sits within OKLab delta E 15 of its theme's accent, so a series never reads as a link. */
+     slot sits within OKLab delta E 15 of its theme's accent, so a series never reads as a link.
+     Some sit near --color-accent-2; the README lists them. */
   --chart-1: #3987e5;
   --chart-2: #ca6408;
   --chart-3: #199e70;
@@ -36,9 +41,13 @@
   --chart-6: #008300;
   --chart-7: #9085e9;
   --chart-8: #e66767;
-  /* Sequential (magnitude): one hue, the blue of slot 1 and of the site's greys, low to high. */
-  --chart-seq-low: #0d366b;
-  --chart-seq-high: #cde2fb;
+  /* The spectrum, for sequential data (magnitude): four stops of neighbouring hues, low to high,
+     interpolated in OKLab (ramp() in src/colour.js). On dark, "ember": deep red and orange to
+     sodium amber and pale gold. Lighter is higher, and every step clears 3:1 on the surface. */
+  --chart-spectrum-1: #c13c36;
+  --chart-spectrum-2: #ea6a12;
+  --chart-spectrum-3: #f6be55;
+  --chart-spectrum-4: #f9f0ba;
 
   /* Type: Space Grotesk for display, Inter for text, JetBrains Mono for code, as on the site.
      The site self-hosts all three; standalone demos fall back to the system stacks. */
@@ -90,7 +99,8 @@
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Light: the site's daylight palette, with H-alpha red as the accent. */
+/* Light: the site's daylight palette, with viridis blue as the accent and green beside it. The
+   spectrum is "viridis": indigo and blue to teal and green, lighter for higher values as on dark. */
 :root[data-theme="light"] [data-demo] {
   color-scheme: light;
   --color-bg: #f5f6f8;
@@ -98,8 +108,9 @@
   --color-text: #10151d;
   --color-muted: #556070;
   --color-border: #d3d9e1;
-  --color-accent: #c2391b;
+  --color-accent: #285388;
   --color-on-accent: #ffffff;
+  --color-accent-2: #5ca24c;
   --color-curve: #98a4b5;
   --chart-1: #2a78d6;
   --chart-2: #ea7401;
@@ -107,10 +118,12 @@
   --chart-4: #c48817;
   --chart-5: #e36f99;
   --chart-6: #008300;
-  --chart-7: #4a3aa7;
+  --chart-7: #5d1cb6;
   --chart-8: #fb5f65;
-  --chart-seq-low: #cde2fb;
-  --chart-seq-high: #0d366b;
+  --chart-spectrum-1: #35226a;
+  --chart-spectrum-2: #285388;
+  --chart-spectrum-3: #0f8080;
+  --chart-spectrum-4: #5ca24c;
 }
 
 @media (prefers-reduced-motion: reduce) {

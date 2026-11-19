@@ -4,6 +4,8 @@ import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
+import { DEFICIENCIES, contrast, distance, parseHex, ramp, simulate, toOklab } from '../src/colour.js';
+
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const pkg = JSON.parse(read('package.json'));
 
@@ -15,16 +17,21 @@ function block(css, selector) {
   return Object.fromEntries([...body.matchAll(/(--[\w-]+):\s*([^;]+);/g)].map(([, name, value]) => [name, value.trim()]));
 }
 
-function luminance(hex) {
-  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
-    .map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+// Every colour token in each theme: dark on :root, and light as dark with its own rule on top.
+function themes() {
+  const css = read('tokens.css');
+  const dark = block(css, ':root');
+  return { dark, light: { ...dark, ...block(css, ':root[data-theme="light"]') } };
 }
 
-function contrast(a, b) {
-  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
-  return (hi + 0.05) / (lo + 0.05);
-}
+const lightness = (color) => toOklab(parseHex(color))[0];
+const seen = (color, vision) => (vision === 'normal' ? color : simulate(color, vision));
+const VISIONS = ['normal', ...DEFICIENCIES];
+
+// The spectrum's stops, and n steps evenly along it. 31 steps land on every stop (0, 1/3, 2/3 and 1)
+// and between them.
+const spectrum = (t) => [1, 2, 3, 4].map((i) => t[`--chart-spectrum-${i}`]);
+const steps = (stops, n) => Array.from({ length: n }, (_, i) => ramp(stops)(i / (n - 1)));
 
 describe('tokens', () => {
   it('tokens.scoped.css is generated from tokens.css', () => {
@@ -40,11 +47,8 @@ describe('tokens', () => {
     for (const selector of selectors) assert.match(selector, /\[data-demo\]$/);
   });
 
-  it('text colours clear 4.5:1 on the background and surface in both themes', () => {
-    const css = read('tokens.css');
-    const dark = block(css, ':root');
-    const themes = { dark, light: { ...dark, ...block(css, ':root[data-theme="light"]') } };
-    for (const [name, t] of Object.entries(themes)) {
+  it('text colours, the accent among them, clear 4.5:1 on the background and surface in both themes', () => {
+    for (const [name, t] of Object.entries(themes())) {
       for (const fg of ['--color-text', '--color-muted', '--color-accent']) {
         for (const bg of ['--color-bg', '--color-surface']) {
           const ratio = contrast(t[fg], t[bg]);
@@ -55,14 +59,70 @@ describe('tokens', () => {
     }
   });
 
+  it('the contrasting highlight clears 3:1 on the surface in both themes', () => {
+    for (const [name, t] of Object.entries(themes())) {
+      const ratio = contrast(t['--color-accent-2'], t['--color-surface']);
+      assert.ok(ratio >= 3, `${name}: --color-accent-2 on --color-surface is ${ratio.toFixed(2)}:1`);
+    }
+  });
+
+  it('the two highlights stay apart, with and without colour-vision deficiencies', () => {
+    // OKLab distance. Measured minimums: dark 0.284 (deuteranopia), light 0.205 (tritanopia).
+    for (const [name, t] of Object.entries(themes())) {
+      for (const vision of VISIONS) {
+        const d = distance(seen(t['--color-accent'], vision), seen(t['--color-accent-2'], vision));
+        assert.ok(d >= 0.2, `${name}, ${vision}: ${d.toFixed(3)}`);
+      }
+    }
+  });
+
   it('chart slots clear 3:1 on the surface in both themes', () => {
-    const css = read('tokens.css');
-    const dark = block(css, ':root');
-    const themes = { dark, light: { ...dark, ...block(css, ':root[data-theme="light"]') } };
-    for (const [name, t] of Object.entries(themes)) {
+    for (const [name, t] of Object.entries(themes())) {
       for (let slot = 1; slot <= 8; slot++) {
         const ratio = contrast(t[`--chart-${slot}`], t['--color-surface']);
         assert.ok(ratio >= 3, `${name}: --chart-${slot} on --color-surface is ${ratio.toFixed(2)}:1`);
+      }
+    }
+  });
+
+  it('no chart slot sits within delta E 15 of the accent, so a series never reads as a link', () => {
+    for (const [name, t] of Object.entries(themes())) {
+      for (let slot = 1; slot <= 8; slot++) {
+        const dE = 100 * distance(t[`--chart-${slot}`], t['--color-accent']);
+        assert.ok(dE >= 15, `${name}: --chart-${slot} is delta E ${dE.toFixed(1)} from --color-accent`);
+      }
+    }
+  });
+
+  it('every step of the spectrum clears 3:1 on the surface in both themes', () => {
+    for (const [name, t] of Object.entries(themes())) {
+      for (const color of steps(spectrum(t), 31)) {
+        const ratio = contrast(color, t['--color-surface']);
+        assert.ok(ratio >= 3, `${name}: ${color} on --color-surface is ${ratio.toFixed(2)}:1`);
+      }
+    }
+  });
+
+  it('the spectrum grows lighter from low to high, with and without colour-vision deficiencies', () => {
+    for (const [name, t] of Object.entries(themes())) {
+      const all = steps(spectrum(t), 31);
+      for (const vision of VISIONS) {
+        const l = all.map((color) => lightness(seen(color, vision)));
+        assert.ok(l.slice(1).every((value, i) => value > l[i]), `${name}, ${vision}: ${l.map((v) => v.toFixed(3))}`);
+      }
+    }
+  });
+
+  it('six steps of the spectrum stay apart, with and without colour-vision deficiencies', () => {
+    // OKLab distance; about 0.02 is a just-noticeable difference. Measured minimums: dark 0.075,
+    // light 0.051, both under tritanopia.
+    for (const [name, t] of Object.entries(themes())) {
+      const six = steps(spectrum(t), 6);
+      for (const vision of VISIONS) {
+        for (let i = 1; i < six.length; i++) {
+          const d = distance(seen(six[i - 1], vision), seen(six[i], vision));
+          assert.ok(d >= 0.05, `${name}, ${vision}, step ${i}: ${d.toFixed(3)}`);
+        }
       }
     }
   });

@@ -5,7 +5,7 @@ The shared library behind the interactive demos on [mark-bugden.github.io](https
 - the standard demo frame
 - controls
 - numerical helpers
-- a chart wrapper and a data loader
+- a chart wrapper, colour maths and a data loader
 - design tokens
 - a validator for the bundle each project builds
 
@@ -187,12 +187,12 @@ plot({ marks: [Plot.lineY(rows, { x: 'day', y: 'count', stroke: 'compartment' })
 - **Text** uses the text face, and axes use the text colour.
 - **Tooltips** sit on the surface colour.
 - **Categorical colours** take `--chart-1` to `--chart-8` in order, and switch with the theme on their own.
-- **Continuous colours** run from `--chart-seq-low` to `--chart-seq-high`.
+- **Continuous colours** run through the spectrum, `--chart-spectrum-1` to `--chart-spectrum-4`, in OKLab.
 - **Spec values win.** Anything set in `spec` overrides these defaults.
 
 Call `plot()` inside `render`, so the chart follows resizes and theme changes.
 
-Every chart slot clears 3:1 against the surface in both themes, so draw charts on the surface, as the stage does. On the light page background, slots 2, 3, 4, 5 and 8 fall to about 2.8:1. In dark mode, slots 2, 5 and 8 sit close to `--color-halpha`, so a chart that also draws with H-alpha should skip them.
+Every chart slot clears 3:1 against the surface in both themes, so draw charts on the surface, as the stage does. On the light page background, slots 2, 3, 4, 5 and 8 fall to about 2.8:1. Some slots sit within ΔE 15 of the contrasting highlight, `--color-accent-2`: slots 2, 5 and 8 on dark, and 3, 4 and 6 on light. A chart that also draws with it should skip them.
 
 ### Loading data
 
@@ -207,6 +207,20 @@ Paths resolve against the demo's own folder. The same call works standalone, emb
 
 `getTheme()` returns `'dark'`, or `'light'` when `<html>` has `data-theme="light"`. `onThemeChange(fn)` calls `fn(theme)` whenever that switches, and returns an unsubscribe function. `token(el, name)` reads a token's computed value.
 
+### Colour
+
+For a demo that colours data itself rather than through `plot()`, such as a heatmap of cells:
+
+```js
+import { ramp, token } from '@mark-bugden/demo-kit';
+const scale = ramp([1, 2, 3, 4].map((i) => token(stage, `--chart-spectrum-${i}`)));
+cell.style.background = scale(0.7);   // 0 is low, 1 is high
+```
+
+- `ramp(stops)` returns a function from `t` in [0, 1] to a colour, through the stops spaced evenly, interpolating in OKLab.
+- `contrast(a, b)` is the WCAG contrast ratio, `simulate(color, deficiency)` shows a colour as it looks with `'protanopia'`, `'deuteranopia'` or `'tritanopia'`, and `distance(a, b)` is the OKLab distance. The kit's tests use them to check its tokens.
+- Colours are hex strings, `#rrggbb`.
+
 ## Design tokens
 
 [`tokens.css`](tokens.css) is the single source of design tokens. Its colours and faces follow the site's phase portrait design, in [`assets/css/site.css`](https://github.com/Mark-Bugden/Mark-Bugden.github.io/blob/main/assets/css/site.css), under the kit's names:
@@ -219,11 +233,16 @@ Paths resolve against the demo's own folder. The same call works standalone, emb
 | `--muted` | `--color-muted` | `#9aa6b8` | `#556070` |
 | `--line` | `--color-border` | `#2a3444` | `#d3d9e1` |
 | `--curve` | `--color-curve` | `#526178` | `#98a4b5` |
-| `--accent` | `--color-accent` | `#f6be55`, sodium amber | `#c2391b`, H-alpha red |
+| `--accent` | `--color-accent` | `#f6be55`, sodium amber | `#285388`, viridis blue |
+| | `--color-accent-2` | `#c13c36`, ember red | `#5ca24c`, green |
 
 - **Theme:** dark, whatever the OS prefers; light only under `<html data-theme="light">`.
-- **Colours:** text, muted text and the accent clear 4.5:1 on the background and surface in both themes, and `--color-on-accent` clears 4.5:1 on the accent. `--color-curve` is for secondary strokes, such as outlines and reference lines, and never for text. `--color-sodium` and `--color-halpha` name the two accents and stay the same in both themes, for demos that draw with them.
-- **Charts:** eight categorical slots and a sequential ramp, checked for colour-vision deficiency on the surface. No slot sits within ΔE 15 of its theme's accent, so a series never looks like a link.
+- **Colour roles:** each theme has three, shared with the site.
+  - The main highlight, `--color-accent`: links, focus, selected items and the primary series. It's the only role that may carry text.
+  - The contrasting highlight, `--color-accent-2`: a second group beside the first, such as zombies beside people. Use it for dots, lines and fills, never text.
+  - The spectrum, `--chart-spectrum-1` to `--chart-spectrum-4`: sequential data, from low to high. It's "ember" on dark and "viridis" on light, and lighter is higher in both.
+- **Colours:** text, muted text and the accent clear 4.5:1 on the background and surface in both themes, and `--color-on-accent` clears 4.5:1 on the accent. `--color-accent-2` clears 3:1 on the surface, and stays at least 0.2 from the accent in OKLab with each colour-vision deficiency. `--color-curve` is for secondary strokes, such as outlines and reference lines, and never for text. `--color-sodium` and `--color-halpha` name sodium amber and H-alpha red, and stay the same in both themes, for demos that draw with them.
+- **Charts:** eight categorical slots and the spectrum, checked for colour-vision deficiency on the surface. No slot sits within ΔE 15 of its theme's accent, so a series never looks like a link. Every step of the spectrum clears 3:1 on the surface, its lightness rises from low to high with and without colour-vision deficiencies, and six steps along it stay at least 0.05 apart in OKLab.
 - **Type:** Space Grotesk for display, at weight 500 and −0.02em tracking as on the site's headings; Inter for text; JetBrains Mono for code. Each has a system fallback stack.
 - **Spacing, radii and motion:** motion durations drop to zero under `prefers-reduced-motion`.
 
@@ -268,7 +287,7 @@ On branch pushes, CI builds the template against the packed working copy instead
 
 ```sh
 npm run lint     # ESLint
-npm test         # node:test: validator, solvers, loader, Markdown subset, theme, tokens, template versions
+npm test         # node:test: validator, solvers, loader, Markdown subset, theme, colour, tokens, template versions
 npm run tokens   # regenerate tokens.scoped.css
 ```
 
