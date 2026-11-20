@@ -233,7 +233,7 @@ cell.style.background = scale(0.7);   // 0 is low, 1 is high
 | `--muted` | `--color-muted` | `#9aa6b8` | `#556070` |
 | `--line` | `--color-border` | `#2a3444` | `#d3d9e1` |
 | `--curve` | `--color-curve` | `#526178` | `#98a4b5` |
-| `--accent` | `--color-accent` | `#f6be55`, sodium amber | `#285388`, viridis blue |
+| `--accent` | `--color-accent` | `#f6be55`, sodium amber | `#2456d3`, Cherenkov blue |
 | | `--color-accent-2` | `#c13c36`, ember red | `#5ca24c`, green |
 
 - **Theme:** dark, whatever the OS prefers; light only under `<html data-theme="light">`.
@@ -241,7 +241,7 @@ cell.style.background = scale(0.7);   // 0 is low, 1 is high
   - The main highlight, `--color-accent`: links, focus, selected items and the primary series. It's the only role that may carry text.
   - The contrasting highlight, `--color-accent-2`: a second group beside the first, such as zombies beside people. Use it for dots, lines and fills, never text.
   - The spectrum, `--chart-spectrum-1` to `--chart-spectrum-4`: sequential data, from low to high. It's "ember" on dark and "viridis" on light, and lighter is higher in both.
-- **Colours:** text, muted text and the accent clear 4.5:1 on the background and surface in both themes, and `--color-on-accent` clears 4.5:1 on the accent. `--color-accent-2` clears 3:1 on the surface, and stays at least 0.2 from the accent in OKLab with each colour-vision deficiency. `--color-curve` is for secondary strokes, such as outlines and reference lines, and never for text. `--color-sodium` and `--color-halpha` name sodium amber and H-alpha red, and stay the same in both themes, for demos that draw with them.
+- **Colours:** text, muted text and the accent clear 4.5:1 on the background and surface in both themes, and `--color-on-accent` clears 4.5:1 on the accent. `--color-accent-2` clears 3:1 on the surface. It stays at least 0.2 from the accent in OKLab with normal vision, protanopia and deuteranopia, and 0.13 with tritanopia, which is rare. `--color-curve` is for secondary strokes, such as outlines and reference lines, and never for text. `--color-sodium` and `--color-halpha` name sodium amber and H-alpha red, and stay the same in both themes, for demos that draw with them.
 - **Charts:** eight categorical slots and the spectrum, checked for colour-vision deficiency on the surface. No slot sits within ΔE 15 of its theme's accent, so a series never looks like a link. Every step of the spectrum clears 3:1 on the surface, its lightness rises from low to high with and without colour-vision deficiencies, and six steps along it stay at least 0.05 apart in OKLab.
 - **Type:** Space Grotesk for display, at weight 500 and −0.02em tracking as on the site's headings; Inter for text; JetBrains Mono for code. Each has a system fallback stack.
 - **Spacing, radii and motion:** motion durations drop to zero under `prefers-reduced-motion`.

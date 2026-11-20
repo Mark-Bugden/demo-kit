@@ -67,11 +67,14 @@ describe('tokens', () => {
   });
 
   it('the two highlights stay apart, with and without colour-vision deficiencies', () => {
-    // OKLab distance. Measured minimums: dark 0.284 (deuteranopia), light 0.205 (tritanopia).
+    // OKLab distance. Measured minimums: dark 0.284 (deuteranopia); light 0.318 (deuteranopia), and
+    // 0.136 with tritanopia. Tritanopia is rare, and a bright light accent can't keep 0.2 from the
+    // green with it, so it is held to 0.13 (Mark's choice, 2026-11-20).
+    const MIN = { normal: 0.2, protanopia: 0.2, deuteranopia: 0.2, tritanopia: 0.13 };
     for (const [name, t] of Object.entries(themes())) {
       for (const vision of VISIONS) {
         const d = distance(seen(t['--color-accent'], vision), seen(t['--color-accent-2'], vision));
-        assert.ok(d >= 0.2, `${name}, ${vision}: ${d.toFixed(3)}`);
+        assert.ok(d >= MIN[vision], `${name}, ${vision}: ${d.toFixed(3)}`);
       }
     }
   });
