@@ -2,6 +2,15 @@
 
 Each release is a tag `v<major>.<minor>.<patch>` on `main`. A change that breaks the bundle contract (a renamed manifest key, a changed mount API) is a major version and is marked **Breaking**.
 
+## 0.5.0
+
+A brighter light accent. The bundle contract and the API are unchanged.
+
+- **The light main highlight**, `--color-accent`, is now Cherenkov blue (`#2456d3`, 6.3:1 on the surface) in place of viridis blue (`#285388`), which read as dull grey beside the text. Dark is unchanged.
+- **The highlights' separation is relaxed for tritanopia only:** at least 0.13 in OKLab (measured 0.136), and still 0.2 with normal vision, protanopia and deuteranopia (measured 0.318 at worst on light). No bright blue keeps 0.2 from the green with tritanopia, which is rare.
+- Light chart slots 1 (`#2a78d6` → `#338ed4`) and 7 (`#5d1cb6` → `#6708b5`) move, to stay ΔE 15 from the new accent.
+- The light spectrum is unchanged, so `#285388` stays its second stop.
+
 ## 0.4.0
 
 A shared palette. Each theme has three colour roles, which the site uses too. The bundle contract is unchanged, but the light accent changes, two tokens are gone and continuous chart colours change.
