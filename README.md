@@ -50,7 +50,7 @@ Put runtime data in `public/data/` (JSON or CSV) and exported models in `public/
 | `manifest.json` | Metadata for the site's project card, page header and, if the project has one, model card. |
 | `index.html` | Runs the demo standalone from any static server, at any URL depth. Relative paths only, no inline scripts. |
 | `demo.js`, `demo.css` | The built demo: one ES module and one stylesheet, with these fixed names. |
-| `thumb.webp` | 1200×675 px, under 80 KB. The project card image. |
+| `thumb.webp` | 1200×675 px, under 80 KB. The project card image. It shows only the demo's visuals, with no text: no titles, labels, legends or numbers. |
 | `og.jpg` | 1200×630 px JPEG, under 150 KB. Used for link previews only. |
 | `static.webp` | A still of the demo's opening state. Shown while the script loads and when JavaScript is off. |
 | `thumb-light.webp`, `static-light.webp` | Optional: light-theme versions of `thumb.webp` and `static.webp`, with the same sizes and limits. The site shows them instead under its light theme. Without them, it shows the dark ones in both themes. |
